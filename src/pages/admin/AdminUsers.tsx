@@ -1,70 +1,53 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Edit, Trash2, User } from 'lucide-react';
-import { mockUsers } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
 
-const roleLabels: Record<string, string> = {
-  candidate: 'Ứng viên',
-  employer: 'Nhà tuyển dụng',
-  admin: 'Admin',
-};
+export default function AdminUsers() {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const AdminUsers = () => (
-  <div className="space-y-6">
-    <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold text-foreground">Quản lý User</h1>
-      <div className="relative w-64">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Tìm user..." className="pl-10" />
-      </div>
-    </div>
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await api.get('/v1/users');
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Lỗi tải Users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
-    <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border bg-muted/50">
-              <th className="text-left p-4 font-medium text-muted-foreground">User</th>
-              <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
-              <th className="text-left p-4 font-medium text-muted-foreground">Vai trò</th>
-              <th className="text-left p-4 font-medium text-muted-foreground">Trạng thái</th>
-              <th className="text-right p-4 font-medium text-muted-foreground">Thao tác</th>
+  if (loading) return <div>Đang tải...</div>;
+
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4">Quản lý Người dùng</h2>
+      <table className="w-full bg-white shadow rounded overflow-hidden">
+        <thead className="bg-gray-800 text-white">
+          <tr>
+            <th className="p-3 text-left">Email</th>
+            <th className="p-3 text-left">Quyền (Role)</th>
+            <th className="p-3 text-left">Trạng thái</th>
+            <th className="p-3 text-left">Ngày tham gia</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(u => (
+            <tr key={u.id} className="border-b">
+              <td className="p-3">{u.email}</td>
+              <td className="p-3 font-semibold">{u.role}</td>
+              <td className="p-3">
+                <span className={`px-2 py-1 text-xs rounded ${u.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {u.status}
+                </span>
+              </td>
+              <td className="p-3">{new Date(u.createdAt).toLocaleDateString('vi-VN')}</td>
             </tr>
-          </thead>
-          <tbody>
-            {mockUsers.map((u) => (
-              <tr key={u.id} className="border-b border-border last:border-0 hover:bg-muted/30">
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <span className="font-medium text-foreground">{u.name}</span>
-                  </div>
-                </td>
-                <td className="p-4 text-muted-foreground">{u.email}</td>
-                <td className="p-4">
-                  <Badge variant="outline">{roleLabels[u.role] || u.role}</Badge>
-                </td>
-                <td className="p-4">
-                  <Badge variant={u.status === 'active' ? 'default' : 'secondary'}>
-                    {u.status === 'active' ? 'Hoạt động' : 'Tạm khóa'}
-                  </Badge>
-                </td>
-                <td className="p-4">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
-  </div>
-);
-
-export default AdminUsers;
+  );
+}

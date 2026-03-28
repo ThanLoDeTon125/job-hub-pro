@@ -1,58 +1,75 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User, Mail, FileText } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import { Application } from '@/types';
+import { toast } from '@/hooks/use-toast';
 
-const applicants = [
-  { id: '1', name: 'Nguyễn Văn A', email: 'a@email.com', job: 'Frontend Developer', status: 'Mới' },
-  { id: '2', name: 'Trần Thị B', email: 'b@email.com', job: 'Frontend Developer', status: 'Đang xem' },
-  { id: '3', name: 'Lê Văn C', email: 'c@email.com', job: 'Backend Developer', status: 'Phỏng vấn' },
-  { id: '4', name: 'Phạm Thị D', email: 'd@email.com', job: 'UI/UX Designer', status: 'Mới' },
-  { id: '5', name: 'Hoàng Văn E', email: 'e@email.com', job: 'DevOps Engineer', status: 'Từ chối' },
-];
+export default function EmployerApplicants({ jobId }: { jobId: number }) {
+  const [applicants, setApplicants] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const statusColors: Record<string, string> = {
-  'Mới': 'bg-primary/10 text-primary',
-  'Đang xem': 'bg-warning/10 text-warning',
-  'Phỏng vấn': 'bg-success/10 text-success',
-  'Từ chối': 'bg-destructive/10 text-destructive',
-};
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      try {
+        // Backend: GET /api/v1/applications/job/{jobId}
+        const response = await api.get(`/v1/applications/job/${jobId}`);
+        setApplicants(response.data);
+      } catch (error) {
+        console.error('Lỗi tải ứng viên:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-const EmployerApplicants = () => (
-  <div className="space-y-6">
-    <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold text-foreground">Danh sách ứng viên</h1>
-      <Select>
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Lọc theo tin" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tất cả</SelectItem>
-          <SelectItem value="fe">Frontend Developer</SelectItem>
-          <SelectItem value="be">Backend Developer</SelectItem>
-        </SelectContent>
-      </Select>
+    // Giả sử lấy jobId tạm thời là 1 nếu chưa truyền prop (bạn cần truyền jobId từ URL vào thực tế)
+    if (jobId) fetchApplicants();
+  }, [jobId]);
+
+  // Hàm HR duyệt đơn
+  const handleUpdateStatus = async (applicationId: number, newStatus: string) => {
+    try {
+      await api.put(`/v1/applications/${applicationId}/status`, { status: newStatus });
+      toast({ title: "Thành công", description: `Đã chuyển sang trạng thái ${newStatus}` });
+
+      // Cập nhật lại UI nội bộ
+      setApplicants(prev => prev.map(app => app.id === applicationId ? { ...app, status: newStatus } : app));
+    } catch (error) {
+      toast({ variant: "destructive", title: "Lỗi", description: "Không thể cập nhật trạng thái." });
+    }
+  };
+
+  if (loading) return <div>Đang tải hồ sơ...</div>;
+
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4">Danh sách ứng viên</h2>
+      <div className="grid gap-4">
+        {applicants.map(app => (
+          <div key={app.id} className="border p-4 flex justify-between items-center rounded bg-white shadow-sm">
+            <div>
+              <p className="font-bold">{app.candidate?.fullName}</p>
+              <p className="text-sm text-gray-500">Ngày nộp: {new Date(app.appliedAt).toLocaleDateString('vi-VN')}</p>
+              <a href={app.candidate?.cvUrl} target="_blank" className="text-blue-500 text-sm underline mt-1 block">
+                Xem CV (PDF)
+              </a>
+            </div>
+
+            <div className="flex gap-2 items-center">
+              <span className="text-sm text-gray-600 font-semibold mr-2">Trạng thái: {app.status}</span>
+              <select
+                value={app.status}
+                onChange={(e) => handleUpdateStatus(app.id, e.target.value)}
+                className="border p-2 rounded text-sm"
+              >
+                <option value="NEW">Mới (NEW)</option>
+                <option value="REVIEWING">Đang xem xét (REVIEWING)</option>
+                <option value="INTERVIEWING">Phỏng vấn (INTERVIEWING)</option>
+                <option value="OFFERED">Mời làm (OFFERED)</option>
+                <option value="REJECTED">Từ chối (REJECTED)</option>
+              </select>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
-
-    <div className="space-y-3">
-      {applicants.map((a) => (
-        <div key={a.id} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-card">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted shrink-0">
-            <User className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-foreground">{a.name}</p>
-            <p className="text-sm text-muted-foreground">{a.job}</p>
-          </div>
-          <Badge className={statusColors[a.status]} variant="secondary">{a.status}</Badge>
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon"><Mail className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon"><FileText className="h-4 w-4" /></Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-export default EmployerApplicants;
+  );
+}
