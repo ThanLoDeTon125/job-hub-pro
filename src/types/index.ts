@@ -39,3 +39,17 @@ export interface Application {
     status: string; // NEW, REVIEWING, INTERVIEWING, REJECTED...
     appliedAt: string;
 }
+
+export interface Article {
+    id: number;
+    title: string;
+    content: string;
+    thumbnailUrl?: string;
+    authorId: number;
+    author?: {
+        email: string;
+        fullName?: string;
+    };
+    createdAt: string;
+    updatedAt?: string;
+}
