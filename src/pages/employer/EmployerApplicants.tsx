@@ -3,7 +3,7 @@ import api from '@/lib/api';
 import { Application } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
-export default function EmployerApplicants({ jobId }: { jobId: number }) {
+export default function EmployerApplicants({ jobId }: { jobId?: number }) {
   const [applicants, setApplicants] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
