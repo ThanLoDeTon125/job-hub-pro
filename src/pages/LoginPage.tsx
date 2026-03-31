@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Briefcase } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth'; // Gọi hook Auth vào đây
 
 const LoginPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const { login } = useAuth(); // Lấy hàm login từ hook
 
-  const onSubmit = (data: any) => {
-    console.log('Login:', data);
+  const onSubmit = async (data: any) => {
+    // Thay vì console.log, chúng ta gọi thẳng xuống API
+    await login(data);
   };
 
   return (

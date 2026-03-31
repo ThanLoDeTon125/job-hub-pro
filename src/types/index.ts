@@ -53,3 +53,16 @@ export interface Article {
     createdAt: string;
     updatedAt?: string;
 }
+
+export interface User {
+    id: number;
+    email: string;
+    role: string;
+
+    // THÊM 3 DÒNG NÀY VÀO:
+    fullName?: string;
+    avatarUrl?: string;
+    logoUrl?: string;
+
+    // (Giữ nguyên các thuộc tính khác nếu có)
+}

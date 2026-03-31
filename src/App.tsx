@@ -29,6 +29,8 @@ import EmployerDashboard from "./pages/employer/EmployerDashboard";
 import EmployerCompany from "./pages/employer/EmployerCompany";
 import EmployerJobs from "./pages/employer/EmployerJobs";
 import EmployerApplicants from "./pages/employer/EmployerApplicants";
+import EmployerLoginPage from "./pages/employer/EmployerLoginPage";
+import EmployerRegisterPage from "./pages/employer/EmployerRegisterPage";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -64,6 +66,9 @@ const App = () => (
           {/* AUTH ROUTES */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          {/* THÊM 2 DÒNG NÀY CHO NHÀ TUYỂN DỤNG */}
+          <Route path="/employer/login" element={<EmployerLoginPage />} />
+          <Route path="/employer/register" element={<EmployerRegisterPage />} />
 
           {/* CANDIDATE ROUTES */}
           <Route path="/candidate" element={<CandidateLayout />}>

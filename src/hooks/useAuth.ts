@@ -8,6 +8,11 @@ export interface User {
   email: string;
   role: 'CANDIDATE' | 'EMPLOYER' | 'ADMIN';
   status: string;
+  candidateProfile?: { fullName: string };
+  company?: { companyName: string };
+  fullName?: string;
+  avatarUrl?: string;
+  logoUrl?: string;
 }
 
 export const useAuth = () => {
@@ -39,20 +44,23 @@ export const useAuth = () => {
     try {
       const response = await api.post('/v1/auth/login', data);
       const { token, role, email, userId } = response.data;
-      
+
       localStorage.setItem('token', token);
       setUser({ id: userId, email, role, status: 'ACTIVE' });
-      
+
       toast({
         title: "Đăng nhập thành công!",
         description: `Chào mừng ${email} quay trở lại.`,
       });
 
       // Chuyển hướng theo Role
-      if (role === 'ADMIN') navigate('/admin');
-      else if (role === 'EMPLOYER') navigate('/employer');
-      else navigate('/candidate');
-      
+      if (role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else {
+        // Bất kể là Ứng viên hay Nhà tuyển dụng, cứ đăng nhập xong là về Trang chủ
+        navigate('/');
+      }
+
       return true;
     } catch (error: any) {
       toast({
@@ -70,7 +78,7 @@ export const useAuth = () => {
       // nhưng ta giả định nó sẽ được đưa lên cùng với login)
       const response = await api.post('/v1/auth/register', data);
       const { token, role, email, userId } = response.data;
-      
+
       localStorage.setItem('token', token);
       setUser({ id: userId, email, role, status: 'ACTIVE' });
 
