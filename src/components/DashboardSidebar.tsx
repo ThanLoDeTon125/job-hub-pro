@@ -10,6 +10,7 @@ import {
   FileText // Thêm import icon này
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { MessageSquareWarning } from 'lucide-react';
 
 export default function DashboardSidebar() {
   const location = useLocation();
@@ -38,6 +39,7 @@ export default function DashboardSidebar() {
     // THÊM NÚT NÀY CHO ADMIN
     { title: 'Quản lý Tin tức', path: '/admin/articles', icon: <FileText className="w-5 h-5" /> },
     { title: 'Thống kê', path: '/admin/stats', icon: <BarChart3 className="w-5 h-5" /> },
+    { title: 'Kiểm duyệt Đánh giá', path: '/admin/reviews', icon: <MessageSquareWarning className="w-5 h-5" /> },
   ];
 
   let links = candidateLinks;
@@ -54,8 +56,8 @@ export default function DashboardSidebar() {
               key={link.path}
               to={link.path}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${isActive
-                  ? 'bg-primary text-primary-foreground font-medium shadow-sm'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                ? 'bg-primary text-primary-foreground font-medium shadow-sm'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
             >
               {link.icon}

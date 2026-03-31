@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import api from '@/lib/api';
 import { Article } from '@/types';
 
+
 export default function AdminArticles() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);

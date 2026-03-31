@@ -3,6 +3,7 @@ import PublicNavbar from '@/components/PublicNavbar';
 import PublicFooter from '@/components/PublicFooter';
 
 const PublicLayout = () => (
+
   <div className="flex min-h-screen flex-col">
     <PublicNavbar />
     <main className="flex-1">
@@ -11,5 +12,6 @@ const PublicLayout = () => (
     <PublicFooter />
   </div>
 );
+
 
 export default PublicLayout;

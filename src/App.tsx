@@ -40,7 +40,7 @@ import AdminStats from "./pages/admin/AdminStats";
 import ArticleListPage from "./pages/ArticleListPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 import AdminArticles from "./pages/admin/AdminArticles";
-
+import AdminReviews from "./pages/admin/AdminReviews";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -78,7 +78,7 @@ const App = () => (
             <Route path="dashboard" element={<EmployerDashboard />} />
             <Route path="company" element={<EmployerCompany />} />
             <Route path="jobs" element={<EmployerJobs />} />
-            <Route path="applicants" element={<EmployerApplicants />} />
+            <Route path="applicants" element={<EmployerApplicants jobId={0} />} />
             {/* Cho phép NTD viết bài */}
             <Route path="articles" element={<AdminArticles />} />
           </Route>
@@ -91,6 +91,7 @@ const App = () => (
             <Route path="stats" element={<AdminStats />} />
             {/* Cho phép Admin viết/quản lý bài */}
             <Route path="articles" element={<AdminArticles />} />
+            <Route path="reviews" element={<AdminReviews />} />
           </Route>
 
           {/* CATCH ALL */}
