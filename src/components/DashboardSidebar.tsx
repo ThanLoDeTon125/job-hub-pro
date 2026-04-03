@@ -7,10 +7,10 @@ import {
   Building2,
   Users,
   BarChart3,
-  FileText // Thêm import icon này
+  FileText,
+  MessageSquareWarning
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { MessageSquareWarning } from 'lucide-react';
 
 export default function DashboardSidebar() {
   const location = useLocation();
@@ -28,7 +28,6 @@ export default function DashboardSidebar() {
     { title: 'Hồ sơ công ty', path: '/employer/company', icon: <Building2 className="w-5 h-5" /> },
     { title: 'Quản lý tin', path: '/employer/jobs', icon: <Briefcase className="w-5 h-5" /> },
     { title: 'Ứng viên', path: '/employer/applicants', icon: <Users className="w-5 h-5" /> },
-    // THÊM NÚT NÀY CHO NHÀ TUYỂN DỤNG
     { title: 'Tin tức & PR', path: '/employer/articles', icon: <FileText className="w-5 h-5" /> },
   ];
 
@@ -36,7 +35,6 @@ export default function DashboardSidebar() {
     { title: 'Tổng quan', path: '/admin/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { title: 'Người dùng', path: '/admin/users', icon: <Users className="w-5 h-5" /> },
     { title: 'Việc làm', path: '/admin/jobs', icon: <Briefcase className="w-5 h-5" /> },
-    // THÊM NÚT NÀY CHO ADMIN
     { title: 'Quản lý Tin tức', path: '/admin/articles', icon: <FileText className="w-5 h-5" /> },
     { title: 'Thống kê', path: '/admin/stats', icon: <BarChart3 className="w-5 h-5" /> },
     { title: 'Kiểm duyệt Đánh giá', path: '/admin/reviews', icon: <MessageSquareWarning className="w-5 h-5" /> },
@@ -47,8 +45,20 @@ export default function DashboardSidebar() {
   if (user?.role === 'ADMIN') links = adminLinks;
 
   return (
-    <aside className="w-64 bg-card border-r h-[calc(100vh-64px)] hidden md:block sticky top-16 shrink-0">
-      <div className="p-4 space-y-2">
+    <aside className="w-64 bg-card border-r h-screen hidden md:flex flex-col sticky top-0 shrink-0">
+      {/* --- KHU VỰC LOGO (Header của Sidebar) --- */}
+      <div className="h-16 flex items-center px-6 border-b border-border">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-bold text-primary hover:opacity-80 transition-opacity"
+        >
+          <Briefcase className="h-6 w-6" />
+          <span className="text-xl tracking-tight">JobHubPro</span>
+        </Link>
+      </div>
+
+      {/* --- KHU VỰC MENU --- */}
+      <div className="flex-1 p-4 space-y-2 overflow-y-auto">
         {links.map((link) => {
           const isActive = location.pathname.includes(link.path);
           return (

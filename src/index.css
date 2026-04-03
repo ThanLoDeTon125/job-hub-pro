@@ -15,16 +15,19 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 15%;
 
-    --primary: 216 93% 53%; /* #1a73e8 or similar bold blue */
+    --primary: 216 93% 53%;
+    /* #1a73e8 or similar bold blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 90% 95%; /* Light blue for tags/secondary */
+    --secondary: 215 90% 95%;
+    /* Light blue for tags/secondary */
     --secondary-foreground: 216 93% 53%;
 
     --muted: 210 20% 96%;
     --muted-foreground: 215 15% 45%;
 
-    --accent: 30 100% 55%; /* Orange/Yellow for highlights like "Đăng tin" */
+    --accent: 30 100% 55%;
+    /* Orange/Yellow for highlights like "Đăng tin" */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -95,12 +98,15 @@
   .gradient-primary {
     background: var(--gradient-primary);
   }
+
   .gradient-hero {
     background: var(--gradient-hero);
   }
+
   .shadow-card {
     box-shadow: var(--shadow-card);
   }
+
   .shadow-elevated {
     box-shadow: var(--shadow-elevated);
   }

@@ -4,7 +4,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/hooks/use-toast';
 import api from '@/lib/api';
 
-export default function EmployerApplicants() {
+interface EmployerApplicantsProps {
+  jobId?: number;
+}
+
+export default function EmployerApplicants({ jobId }: EmployerApplicantsProps) {
   const [jobs, setJobs] = useState<any[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string>('');
   const [applicants, setApplicants] = useState<any[]>([]);

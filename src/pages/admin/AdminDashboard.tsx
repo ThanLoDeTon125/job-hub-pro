@@ -1,32 +1,18 @@
 import { useState, useEffect } from 'react';
-import StatCard from '@/components/StatCard';
-import { Users, Briefcase, Building2, TrendingUp } from 'lucide-react';
+import { Users, Briefcase, FileText, Building2, MessageSquare } from 'lucide-react';
 import api from '@/lib/api';
 
-const AdminDashboard = () => {
-  const [stats, setStats] = useState({ jobs: 0, candidates: 0, employers: 0, applications: 0 });
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [jobsRes, usersRes, appsRes] = await Promise.all([
-          api.get('/v1/jobs'),
-          api.get('/v1/users'),
-          api.get('/v1/applications')
-        ]);
-
-        const totalJobs = jobsRes.data.Data?.length || jobsRes.data.length || 0;
-        const totalApps = appsRes.data.length || 0;
-
-        // Phân loại user
-        const users = usersRes.data || [];
-        const totalCandidates = users.filter((u: any) => u.role === 'CANDIDATE').length;
-        const totalEmployers = users.filter((u: any) => u.role === 'EMPLOYER').length;
-
-        setStats({ jobs: totalJobs, candidates: totalCandidates, employers: totalEmployers, applications: totalApps });
+        const res = await api.get('/v1/stats/dashboard');
+        setStats(res.data);
       } catch (error) {
-        console.error("Lỗi lấy thống kê", error);
+        console.error("Lỗi lấy số liệu thống kê:", error);
       } finally {
         setLoading(false);
       }
@@ -34,19 +20,43 @@ const AdminDashboard = () => {
     fetchStats();
   }, []);
 
-  if (loading) return <div>Đang tính toán số liệu...</div>;
+  if (loading) return <div className="p-10 text-center">Đang tải số liệu hệ thống...</div>;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Dashboard Admin</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Briefcase} label="Tổng việc làm" value={stats.jobs.toString()} trend="Hoạt động" />
-        <StatCard icon={Users} label="Ứng viên" value={stats.candidates.toString()} trend="Thành viên" />
-        <StatCard icon={Building2} label="Nhà tuyển dụng" value={stats.employers.toString()} trend="Doanh nghiệp" />
-        <StatCard icon={TrendingUp} label="Lượt ứng tuyển" value={stats.applications.toString()} trend="Tương tác" />
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Tổng quan Hệ thống</h1>
+        <p className="text-muted-foreground text-sm mt-1">Theo dõi các chỉ số hoạt động của JobHubPro</p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
+        <StatCard title="Tổng Người Dùng" value={stats?.totalUsers || 0} icon={<Users className="w-8 h-8 text-blue-500" />} bgColor="bg-blue-50" />
+        <div className="bg-card border rounded-2xl p-6 shadow-sm flex items-center gap-4">
+          <div className="p-4 bg-purple-50 rounded-xl"><Briefcase className="w-8 h-8 text-purple-500" /></div>
+          <div><p className="text-sm font-medium text-muted-foreground">Tổng Việc Làm</p><h3 className="text-3xl font-bold">{stats?.totalJobs || 0}</h3></div>
+        </div>
+        <div className="bg-card border rounded-2xl p-6 shadow-sm flex items-center gap-4">
+          <div className="p-4 bg-orange-50 rounded-xl"><Building2 className="w-8 h-8 text-orange-500" /></div>
+          <div><p className="text-sm font-medium text-muted-foreground">Tổng Công Ty</p><h3 className="text-3xl font-bold">{stats?.totalCompanies || 0}</h3></div>
+        </div>
+        <div className="bg-card border rounded-2xl p-6 shadow-sm flex items-center gap-4">
+          <div className="p-4 bg-red-50 rounded-xl"><MessageSquare className="w-8 h-8 text-red-500" /></div>
+          <div><p className="text-sm font-medium text-muted-foreground">Tổng Bình Luận</p><h3 className="text-3xl font-bold">{stats?.totalReviews || 0}</h3></div>
+        </div>
       </div>
     </div>
   );
-};
+}
 
-export default AdminDashboard;
+// Component thẻ thống kê nhỏ
+function StatCard({ title, value, icon, bgColor }: any) {
+  return (
+    <div className="bg-card border rounded-2xl p-6 shadow-sm flex items-center gap-4">
+      <div className={`p-4 rounded-xl ${bgColor}`}>{icon}</div>
+      <div>
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <h3 className="text-3xl font-bold text-foreground">{value}</h3>
+      </div>
+    </div>
+  );
+}
