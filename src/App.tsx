@@ -31,6 +31,8 @@ import EmployerJobs from "./pages/employer/EmployerJobs";
 import EmployerApplicants from "./pages/employer/EmployerApplicants";
 import EmployerLoginPage from "./pages/employer/EmployerLoginPage";
 import EmployerRegisterPage from "./pages/employer/EmployerRegisterPage";
+import EmployerCandidateDetail from "./pages/employer/EmployerCandidateDetail";
+
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -86,6 +88,7 @@ const App = () => (
             <Route path="applicants" element={<EmployerApplicants jobId={0} />} />
             {/* Cho phép NTD viết bài */}
             <Route path="articles" element={<AdminArticles />} />
+            <Route path="applicants/:id" element={<EmployerCandidateDetail />} />
           </Route>
 
           {/* ADMIN ROUTES */}

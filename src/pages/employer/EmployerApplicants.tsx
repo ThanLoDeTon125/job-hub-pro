@@ -3,6 +3,8 @@ import { Mail, Phone, Briefcase, FileText } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import api from '@/lib/api';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface EmployerApplicantsProps {
   jobId?: number;
@@ -124,13 +126,11 @@ export default function EmployerApplicants({ jobId }: EmployerApplicantsProps) {
                   <span className="text-xs font-medium bg-muted px-2 py-1 rounded">
                     Ngày nộp: {new Date(app.appliedAt).toLocaleDateString('vi-VN')}
                   </span>
-                  {app.candidate?.cvUrl ? (
-                    <a href={app.candidate.cvUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1">
-                      <FileText className="w-4 h-4" /> Xem CV đính kèm
-                    </a>
-                  ) : (
-                    <span className="text-sm text-red-500 italic">Không có CV</span>
-                  )}
+                  <Link to={`/employer/applicants/${app.candidate?.id}`}>
+                    <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/10">
+                      <FileText className="w-4 h-4 mr-2" /> Xem chi tiết Hồ sơ & CV
+                    </Button>
+                  </Link>
                 </div>
               </div>
 

@@ -19,16 +19,16 @@ export default function JobDetailPage() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
 
+  // State cho nút Ứng tuyển
+  const [isApplying, setIsApplying] = useState(false);
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // 1. Tải chi tiết Job
         const jobRes = await api.get(`/v1/jobs/${id}`);
         setJob(jobRes.data);
 
-        // 2. Tải danh sách Review
-        // 🚀 ĐÃ SỬA URL THÀNH /jobreviews (VIẾT LIỀN)
         const reviewRes = await api.get(`/v1/jobreviews/job/${id}`);
         setReviews(reviewRes.data || []);
       } catch (error) {
@@ -40,19 +40,38 @@ export default function JobDetailPage() {
     loadData();
   }, [id]);
 
-  const submitReview = async () => {
+  // 🚀 HÀM XỬ LÝ ỨNG TUYỂN
+  const handleApply = async () => {
     if (!user) {
-      return toast({ variant: "destructive", title: "Lỗi", description: "Bạn cần đăng nhập để đánh giá." });
+      return toast({ variant: "destructive", title: "Lỗi", description: "Bạn cần đăng nhập để ứng tuyển." });
     }
     if (user.role !== 'CANDIDATE') {
-      return toast({ variant: "destructive", title: "Lỗi", description: "Chỉ ứng viên mới có thể đánh giá." });
-    }
-    if (!comment.trim()) {
-      return toast({ variant: "destructive", title: "Lỗi", description: "Vui lòng nhập nội dung đánh giá." });
+      return toast({ variant: "destructive", title: "Lỗi", description: "Chỉ tài khoản Ứng viên mới có thể ứng tuyển." });
     }
 
+    setIsApplying(true);
     try {
-      // 🚀 ĐÃ SỬA URL THÀNH /jobreviews (VIẾT LIỀN)
+      await api.post('/v1/applications', {
+        jobId: Number(id)
+      });
+      toast({ title: "Thành công!", description: "Đã nộp đơn ứng tuyển. Nhà tuyển dụng sẽ sớm liên hệ với bạn." });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: error.response?.data?.message || "Không thể ứng tuyển lúc này."
+      });
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
+  const submitReview = async () => {
+    if (!user) return toast({ variant: "destructive", title: "Lỗi", description: "Bạn cần đăng nhập để đánh giá." });
+    if (user.role !== 'CANDIDATE') return toast({ variant: "destructive", title: "Lỗi", description: "Chỉ ứng viên mới có thể đánh giá." });
+    if (!comment.trim()) return toast({ variant: "destructive", title: "Lỗi", description: "Vui lòng nhập nội dung đánh giá." });
+
+    try {
       await api.post('/v1/jobreviews', {
         jobId: Number(id),
         rating: rating,
@@ -62,7 +81,6 @@ export default function JobDetailPage() {
       toast({ title: "Thành công", description: "Đã gửi đánh giá của bạn!" });
       setComment('');
 
-      // Tải lại danh sách review để hiện comment mới nhất
       const reviewRes = await api.get(`/v1/jobreviews/job/${id}`);
       setReviews(reviewRes.data || []);
 
@@ -96,7 +114,16 @@ export default function JobDetailPage() {
               <h1 className="text-3xl font-bold text-slate-800">{job.title}</h1>
               <p className="text-lg text-primary font-medium mt-1">{job.company?.companyName}</p>
             </div>
-            <Button size="lg" className="w-full md:w-auto h-12 px-8 text-lg">Ứng tuyển ngay</Button>
+
+            {/* 🚀 NÚT ỨNG TUYỂN ĐÃ ĐƯỢC GẮN LOGIC */}
+            <Button
+              size="lg"
+              className="w-full md:w-auto h-12 px-8 text-lg transition-transform active:scale-95"
+              onClick={handleApply}
+              disabled={isApplying}
+            >
+              {isApplying ? 'Đang gửi...' : 'Ứng tuyển ngay'}
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t">
@@ -135,7 +162,6 @@ export default function JobDetailPage() {
         <div className="bg-white p-8 rounded-2xl border shadow-sm">
           <h3 className="text-xl font-bold border-b pb-2 mb-6">Đánh giá & Bình luận ({reviews.length})</h3>
 
-          {/* Form viết bình luận */}
           <div className="bg-slate-50 p-5 rounded-xl mb-8 border border-slate-100">
             <div className="flex items-center gap-2 mb-3">
               <span className="font-medium text-sm">Chất lượng:</span>
@@ -162,7 +188,6 @@ export default function JobDetailPage() {
             </div>
           </div>
 
-          {/* Danh sách bình luận */}
           <div className="space-y-5">
             {reviews.length === 0 ? (
               <p className="text-center text-muted-foreground py-4 italic">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
